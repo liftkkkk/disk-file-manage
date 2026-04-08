@@ -1,83 +1,85 @@
-# FileIndex — 本地硬盘文件索引工具
+# FileIndex — 让你的硬盘文件触手可及
 
-> 高性能本地文件索引与搜索工具，支持 Windows / Linux / macOS。
-> 技术栈：Python Flask 后端 + Vue 3 前端。
+> 再也不用翻文件夹找文件。  
+> FileIndex 为你的本地硬盘建立闪电级索引，支持模糊搜索、拼音搜索，全程离线，数据 100% 留在你自己的电脑上。
+
+支持 **Windows / Linux / macOS**
+
+---
+
+## 你是否有过这些烦恼？
+
+- 🗃️ 硬盘上有几十万个文件，找一个靠记忆和运气
+- 🔤 记不清文件名全拼，只知道大概叫什么
+- 📂 文件散落在多个目录，不知道从哪开始翻
+- 🔁 每次重启电脑都要重新等待扫描
+- 🔒 担心文件信息被上传到云端
+
+**FileIndex 就是为解决这些问题而生的。**
 
 ---
 
-## ✨ 新版亮点
+## 核心功能一览
 
-| 优化项 | 说明 | 来源 |
-|--------|------|------|
-| **SQLite 持久化** | 索引写入本地数据库，重启后立即可用，无需重新扫描 | Jeff Dean / Andrew Ng |
-| **并行属主查询** | ThreadPoolExecutor 并行处理 owner lookup，百万文件仍流畅 | Jensen Huang |
-| **模糊搜索** | 集成 rapidfuzz，支持拼写容错，可配置匹配阈值（0-100） | Karpathy |
-| **拼音搜索** | 集成 pypinyin，输入 `baogao` 可找到「报告.docx」 | Karpathy |
-| **忽略规则** | 全局 glob 忽略列表（node_modules、.git 等），可在设置中自定义 | Fei-Fei Li |
-| **符号链接检测** | 记录已访问的真实路径，防止符号链接循环导致死循环 | Pieter Abbeel |
-| **LRU + TTL 缓存** | 内存缓存最多 20 个索引，1 小时 TTL 自动过期，防止内存泄漏 | Pieter Abbeel |
-| **API Key 认证** | 可选的 X-API-Key Header 认证，在设置页面开启 | Dario Amodei |
-| **命名索引管理** | 索引可命名、重命名、删除，侧边栏展示所有已建立的索引 | UX |
+### 🔍 强大的文件搜索
+- **精确搜索**：按文件名、路径、创建者快速定位
+- **模糊搜索**：打错字也没关系，`报告` 打成 `报告` 也能找到
+- **拼音搜索**：输入 `baogao` 即可匹配「报告.docx」，特别适合中文文件名
+- **按类型筛选**：点击扩展名标签，只看 PDF / Excel / 图片……
+- **排序 & 分页**：按大小、时间灵活排序，百万文件也不卡
 
----
+### 📊 统计分析，一眼掌握磁盘全貌
+- 文件类型分布图，点击即可跳转搜索
+- 最大文件排行、创建者排行，快速发现空间黑洞
+
+### 💾 索引持久化，无需反复等待
+- 扫描结果保存在本地数据库，重启后立即可用
+- 支持对多个目录分别建立索引，侧边栏一键切换
+
+### 🛡️ 完全本地，隐私有保障
+- 所有数据均存储在你自己的电脑上
+- 不联网、不上传、不注册账号
 
 ![图谱视图](docs/fileindex01.jpeg)
 ![图谱视图](docs/fileindex02.jpeg)
 
-## 🗂 项目结构
-
-```
-disk-file-manage/
-├── backend/
-│   ├── app.py            # Flask 后端（全量重写）
-│   ├── requirements.txt  # Python 依赖
-│   ├── fileindex.db      # SQLite 数据库（自动生成）
-│   ├── settings.json     # 全局设置（自动生成）
-│   └── exports/          # CSV 导出临时目录（自动生成）
-├── frontend/
-│   ├── src/App.vue       # Vue 3 单文件组件（4 页面布局）
-│   ├── index.html
-│   ├── package.json
-│   └── vite.config.js
-└── README.md
-```
-
 ---
 
-## 🚀 快速开始
+## 快速上手（5 分钟跑起来）
 
 ### 环境要求
 
-- Python 3.8+
-- Node.js 16+
+- Python 3.8 或以上
+- Node.js 16 或以上
 
-### 1. 启动后端
+### 第一步：启动后端服务
 
 ```bash
 cd backend
 pip install -r requirements.txt
 python app.py
-# 服务运行在 http://localhost:3000
 ```
 
-启动时会显示当前能力：
+启动成功后，你会看到：
+
 ```
 ✦ FileIndex backend  →  http://localhost:3000
-  fuzzy engine  : rapidfuzz        ← 模糊搜索引擎
-  pinyin support: True             ← 拼音搜索是否可用
+  fuzzy engine  : rapidfuzz        ← 模糊搜索已就绪
+  pinyin support: True             ← 拼音搜索已就绪
   database      : /path/to/fileindex.db
 ```
 
-### 2. 启动前端
+### 第二步：启动前端界面
 
 ```bash
 cd frontend
 npm install
 npm run dev
-# 前端运行在 http://localhost:5173
 ```
 
-### 3. 构建生产版本
+打开浏览器访问 **http://localhost:5173**，即可使用。
+
+### 第三步（可选）：构建生产版本
 
 ```bash
 cd frontend
@@ -86,116 +88,63 @@ npm run build
 
 ---
 
-## 📖 使用说明
+## 使用流程
 
-### 索引目录
+### 1. 建立索引
+进入「索引目录」页 → 输入你要扫描的文件夹路径 → 点击「开始索引」。  
+扫描进度实时显示，完成后自动进入统计页。你可以为每个索引起一个好记的名字，方便以后切换。
 
-1. 切换到「索引目录」页，输入路径，可选填索引名称
-2. 点击「开始索引」，进度条通过 SSE 实时推送
-3. 完成后自动跳转到「统计分析」页
-4. 所有索引持久化存储，侧边栏可切换
+### 2. 搜索文件
+进入「文件搜索」页，直接在搜索框输入关键词，支持：
+- 汉字 / 英文 / 拼音混合输入
+- 开启「模糊」开关，容忍拼写错误
+- 点击扩展名标签按类型筛选
+- 点击列头按大小 / 时间排序
 
-### 文件搜索
+### 3. 查看统计
+进入「统计分析」页，查看磁盘使用全貌，快速找出最占空间的文件类型或文件。
 
-- 支持文件名、路径、创建者的 **精确子串** 搜索
-- 开启「模糊」开关，容忍拼写错误（可在设置中调整阈值）
-- 安装 pypinyin 后，支持拼音搜索：输入 `baogao` → 匹配「报告.docx」
-- 点击扩展名 Chip 按类型过滤；点击列头排序；支持分页
-
-### 统计分析
-
-- 文件类型分布条形图（点击类型可直接跳转搜索）
-- 创建者排行 / 最大文件列表
-
-### 设置
-
-- **忽略规则**：glob 格式，新建索引时自动跳过（已有索引不受影响）
-- **模糊阈值**：拖动滑块调整，55% 是经验推荐值
-- **API Key**：设置后所有请求须携带 `X-API-Key` Header
+### 4. 个性化设置
+进入「设置」页，你可以：
+- 设置**忽略规则**（如跳过 `node_modules`、`.git` 等无用目录）
+- 调整**模糊匹配灵敏度**（推荐值 55%，越高越严格）
+- 开启 **API Key 保护**，防止他人访问你的索引服务
 
 ---
 
-## 🔌 API 接口
+## 后续计划
 
-### 创建索引（异步）
+我们正在开发以下功能，敬请期待：
 
-```http
-POST /api/index
-Content-Type: application/json
-
-{
-  "directoryPath": "/path/to/dir",
-  "name": "我的文档",
-  "ignorePatterns": ["*.tmp", "backup"]
-}
-```
-
-响应：`{ "success": true, "taskId": "...", "indexId": 1 }`
-
-### SSE 进度流
-
-```
-GET /api/index/stream?taskId=...
-```
-
-事件：`progress` / `done` / `error` / `ping`
-
-### 搜索
-
-```http
-POST /api/search
-{ "indexId": 1, "searchTerm": "报告", "extFilter": ".pdf",
-  "sortBy": "size", "sortOrder": "desc", "page": 1, "pageSize": 100,
-  "fuzzy": true }
-```
-
-返回字段包含 `score`（模糊匹配百分比）。
-
-### 索引管理
-
-```
-GET    /api/indexes                   列出所有索引
-DELETE /api/indexes/<id>              删除索引及其文件数据
-POST   /api/indexes/<id>/rename       { "name": "新名称" }
-GET    /api/stats/<id>                统计信息
-GET    /api/export/<id>               流式 CSV 导出
-```
-
-### 设置
-
-```
-GET  /api/settings
-POST /api/settings   { "ignorePatterns": [...], "fuzzyThreshold": 60, "apiKey": "..." }
-```
-
----
-
-## ⚙️ 配置
-
-| 项目 | 默认值 | 修改方式 |
-|------|--------|---------|
-| 后端端口 | `3000` | 环境变量 `PORT` |
-| API 地址（前端） | `http://localhost:3000` | `src/App.vue` 顶部 `const API` |
-| 数据库路径 | `backend/fileindex.db` | 代码中 `DB_PATH` |
-| 上传限制 | 50 MB | `app.py` `MAX_CONTENT_LENGTH` |
-| 缓存大小 | 20 个索引 | `CACHE_MAX_KEYS` |
-| 缓存 TTL | 3600 秒 | `CACHE_TTL` |
-
----
-
-## 🔮 后续规划
-
-- [ ] SQLite FTS5 全文检索（文件内容索引）
-- [ ] 增量扫描（只处理变更文件）
-- [ ] 多目录并发索引
-- [ ] 本地 LLM（Ollama）语义搜索接入
+- [ ] 文件内容全文检索（不只搜文件名）
+- [ ] 增量扫描，只处理新增 / 变更的文件
+- [ ] 多目录同时并发索引
+- [ ] 接入本地 AI（Ollama）进行语义搜索
 - [ ] 定时自动重建索引
-- [ ] 跨机器索引同步
+- [ ] 多台机器之间的索引同步
 
 ---
 
-## 📄 许可证
+## 常见问题
 
-ISC License
+**Q：扫描很慢怎么办？**  
+A：可以在设置中添加忽略规则，跳过 `node_modules`、系统目录等无意义的路径，可大幅缩短扫描时间。
 
-> **隐私声明**：所有数据均在本地处理，不会上传至任何外部服务器。
+**Q：重启电脑后还需要重新扫描吗？**  
+A：不需要。索引已持久化保存在本地数据库，重启后直接可用。
+
+**Q：支持搜索文件内容吗？**  
+A：当前版本仅支持搜索文件名和路径，文件内容全文检索在开发计划中。
+
+**Q：我的文件信息会上传到网络吗？**  
+A：绝对不会。FileIndex 完全离线运行，所有数据只存在你的本地电脑上。
+
+---
+
+## 开源协议
+
+ISC License — 自由使用，欢迎贡献。
+
+---
+
+> 💡 **隐私承诺**：FileIndex 不联网、不收集任何数据，你的文件信息始终只属于你。
