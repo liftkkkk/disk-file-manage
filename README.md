@@ -1,304 +1,198 @@
-# 本地硬盘文件索引工具
+# FileIndex — 本地硬盘文件索引工具 v2
 
-一个功能强大的本地文件索引和搜索工具，支持多平台（Windows、Linux、macOS），帮助您快速管理和搜索本地文件。
+> 高性能本地文件索引与搜索工具，支持 Windows / Linux / macOS。
+> 技术栈：Python Flask 后端 + Vue 3 前端。
 
-## 功能特性
+---
 
-- **文件索引**：递归遍历本地目录，收集文件元数据（路径、大小、修改时间、创建者）
-- **快速搜索**：基于索引文件进行高效的文件搜索
-- **CSV 导出**：将索引结果导出为 CSV 格式，便于后续处理
-- **文件上传**：支持上传已有的 CSV 文件进行搜索
-- **搜索历史**：自动记录搜索历史，方便快速重复搜索
-- **多平台支持**：支持 Windows、Linux 和 macOS 系统
-- **安全验证**：防止路径遍历攻击，确保操作安全
+## ✨ 新版亮点（v2 优化）
 
-## 技术栈
+| 优化项 | 说明 | 来源 |
+|--------|------|------|
+| **SQLite 持久化** | 索引写入本地数据库，重启后立即可用，无需重新扫描 | Jeff Dean / Andrew Ng |
+| **并行属主查询** | ThreadPoolExecutor 并行处理 owner lookup，百万文件仍流畅 | Jensen Huang |
+| **模糊搜索** | 集成 rapidfuzz，支持拼写容错，可配置匹配阈值（0-100） | Karpathy |
+| **拼音搜索** | 集成 pypinyin，输入 `baogao` 可找到「报告.docx」 | Karpathy |
+| **忽略规则** | 全局 glob 忽略列表（node_modules、.git 等），可在设置中自定义 | Fei-Fei Li |
+| **符号链接检测** | 记录已访问的真实路径，防止符号链接循环导致死循环 | Pieter Abbeel |
+| **LRU + TTL 缓存** | 内存缓存最多 20 个索引，1 小时 TTL 自动过期，防止内存泄漏 | Pieter Abbeel |
+| **API Key 认证** | 可选的 X-API-Key Header 认证，在设置页面开启 | Dario Amodei |
+| **命名索引管理** | 索引可命名、重命名、删除，侧边栏展示所有已建立的索引 | UX |
 
-### 前端
-- **Vue 3** - 渐进式 JavaScript 框架
-- **Vite** - 下一代前端构建工具
-- **Axios** - HTTP 客户端
+---
 
-### 后端
-- **Node.js + Express** - 高性能 Web 服务器
-- **Python + Flask** - 轻量级 Web 框架
-- **CSV 处理** - CSV 文件的读写和解析
-
-## 项目结构
+## 🗂 项目结构
 
 ```
-file/
-├── backend/              # 后端代码
-│   ├── app.py           # Flask 后端服务器
-│   ├── index.js         # Express 后端服务器
-│   ├── package.json     # Node.js 依赖配置
-│   ├── requirements.txt # Python 依赖配置
-│   └── temp/            # 临时文件目录（自动生成）
-├── frontend/            # 前端代码
-│   ├── src/
-│   │   ├── App.vue     # 主应用组件
-│   │   ├── main.js     # 应用入口
-│   │   └── assets/     # 静态资源
-│   ├── public/         # 公共资源
-│   ├── index.html      # HTML 模板
-│   ├── package.json    # 前端依赖配置
-│   └── vite.config.js  # Vite 配置
-├── .gitignore          # Git 忽略配置
-└── README.md           # 项目文档
+disk-file-manage/
+├── backend/
+│   ├── app.py            # Flask 后端（全量重写）
+│   ├── requirements.txt  # Python 依赖
+│   ├── fileindex.db      # SQLite 数据库（自动生成）
+│   ├── settings.json     # 全局设置（自动生成）
+│   └── exports/          # CSV 导出临时目录（自动生成）
+├── frontend/
+│   ├── src/App.vue       # Vue 3 单文件组件（4 页面布局）
+│   ├── index.html
+│   ├── package.json
+│   └── vite.config.js
+└── README.md
 ```
 
-## 快速开始
+---
+
+## 🚀 快速开始
 
 ### 环境要求
 
-- Node.js 14+ 
-- Python 3.7+
-- npm 或 yarn
+- Python 3.8+
+- Node.js 16+
 
-### 安装步骤
-
-#### 1. 克隆项目
-
-```bash
-git clone <repository-url>
-cd file
-```
-
-#### 2. 安装后端依赖
-
-**Node.js 版本：**
-
-```bash
-cd backend
-npm install
-```
-
-**Python 版本：**
+### 1. 启动后端
 
 ```bash
 cd backend
 pip install -r requirements.txt
+python app.py
+# 服务运行在 http://localhost:3000
 ```
 
-#### 3. 安装前端依赖
+启动时会显示当前能力：
+```
+✦ FileIndex backend  →  http://localhost:3000
+  fuzzy engine  : rapidfuzz        ← 模糊搜索引擎
+  pinyin support: True             ← 拼音搜索是否可用
+  database      : /path/to/fileindex.db
+```
+
+### 2. 启动前端
 
 ```bash
 cd frontend
 npm install
-```
-
-### 运行项目
-
-#### 启动后端服务
-
-**Node.js 版本：**
-
-```bash
-cd backend
-npm start
-```
-
-服务将在 `http://localhost:3000` 启动
-
-**Python 版本：**
-
-```bash
-cd backend
-python app.py
-```
-
-服务将在 `http://localhost:5000` 启动
-
-#### 启动前端开发服务器
-
-```bash
-cd frontend
 npm run dev
+# 前端运行在 http://localhost:5173
 ```
 
-前端将在 `http://localhost:5173` 启动（Vite 默认端口）
-
-### 构建生产版本
+### 3. 构建生产版本
 
 ```bash
 cd frontend
 npm run build
 ```
 
-构建产物将生成在 `frontend/dist/` 目录
+---
 
-## 使用说明
+## 📖 使用说明
 
-### 文件索引
+### 索引目录
 
-1. 在"目录路径"输入框中输入要索引的文件夹路径
-   - Windows: `C:\Users\Documents`
-   - Linux/macOS: `/home/user/documents`
-2. 点击"开始索引"按钮
-3. 等待索引完成，系统会显示找到的文件数量
-4. 可以下载生成的 CSV 文件
+1. 切换到「索引目录」页，输入路径，可选填索引名称
+2. 点击「开始索引」，进度条通过 SSE 实时推送
+3. 完成后自动跳转到「统计分析」页
+4. 所有索引持久化存储，侧边栏可切换
 
 ### 文件搜索
 
-1. 确保已经完成索引或上传了 CSV 文件
-2. 在"搜索关键词"输入框中输入搜索词
-3. 点击"搜索"按钮
-4. 查看搜索结果，包括文件路径、大小、修改时间和创建者
+- 支持文件名、路径、创建者的 **精确子串** 搜索
+- 开启「模糊」开关，容忍拼写错误（可在设置中调整阈值）
+- 安装 pypinyin 后，支持拼音搜索：输入 `baogao` → 匹配「报告.docx」
+- 点击扩展名 Chip 按类型过滤；点击列头排序；支持分页
 
-### 上传 CSV 文件
+### 统计分析
 
-如果您已有之前生成的 CSV 文件，可以直接上传：
+- 文件类型分布条形图（点击类型可直接跳转搜索）
+- 创建者排行 / 最大文件列表
 
-1. 点击"选择文件"按钮
-2. 选择 CSV 文件
-3. 使用搜索功能进行文件搜索
+### 设置
 
-## API 接口
+- **忽略规则**：glob 格式，新建索引时自动跳过（已有索引不受影响）
+- **模糊阈值**：拖动滑块调整，55% 是经验推荐值
+- **API Key**：设置后所有请求须携带 `X-API-Key` Header
 
-### 文件索引
+---
+
+## 🔌 API 接口
+
+### 创建索引（异步）
 
 ```http
 POST /api/index
 Content-Type: application/json
 
 {
-  "directoryPath": "C:\\Users\\Documents"
+  "directoryPath": "/path/to/dir",
+  "name": "我的文档",
+  "ignorePatterns": ["*.tmp", "backup"]
 }
 ```
 
-响应：
-```json
-{
-  "success": true,
-  "totalFiles": 1234,
-  "csvFilePath": "file_index_1234567890.csv"
-}
+响应：`{ "success": true, "taskId": "...", "indexId": 1 }`
+
+### SSE 进度流
+
+```
+GET /api/index/stream?taskId=...
 ```
 
-### 文件搜索
+事件：`progress` / `done` / `error` / `ping`
+
+### 搜索
 
 ```http
 POST /api/search
-Content-Type: application/json
-
-{
-  "csvFileName": "file_index_1234567890.csv",
-  "searchTerm": "document"
-}
+{ "indexId": 1, "searchTerm": "报告", "extFilter": ".pdf",
+  "sortBy": "size", "sortOrder": "desc", "page": 1, "pageSize": 100,
+  "fuzzy": true }
 ```
 
-响应：
-```json
-{
-  "success": true,
-  "results": [
-    {
-      "path": "C:\\Users\\Documents\\report.pdf",
-      "size": "1024.5 KB",
-      "modifiedTime": "2024-01-01 12:00:00",
-      "creator": "user"
-    }
-  ],
-  "total": 1
-}
+返回字段包含 `score`（模糊匹配百分比）。
+
+### 索引管理
+
+```
+GET    /api/indexes                   列出所有索引
+DELETE /api/indexes/<id>              删除索引及其文件数据
+POST   /api/indexes/<id>/rename       { "name": "新名称" }
+GET    /api/stats/<id>                统计信息
+GET    /api/export/<id>               流式 CSV 导出
 ```
 
-### CSV 文件上传搜索
+### 设置
 
-```http
-POST /api/search/upload
-Content-Type: multipart/form-data
-
-file: <CSV file>
-searchTerm: document
 ```
-
-### 下载 CSV 文件
-
-```http
-GET /api/download/:filename
+GET  /api/settings
+POST /api/settings   { "ignorePatterns": [...], "fuzzyThreshold": 60, "apiKey": "..." }
 ```
-
-## 配置说明
-
-### 后端配置
-
-- **端口**：默认 3000 (Node.js) 或 5000 (Python)
-- **文件大小限制**：50MB
-- **临时文件目录**：`backend/temp/`
-
-### 前端配置
-
-- **API 基础 URL**：`http://localhost:3000`（可在 `src/App.vue` 中修改）
-- **请求超时**：1 小时（用于大目录索引）
-
-## 安全特性
-
-- 路径遍历防护
-- 文件类型验证（仅接受 CSV 文件）
-- 文件大小限制
-- 输入验证和清理
-
-## 性能优化
-
-- 支持大目录索引（带进度提示）
-- 高效的 CSV 文件解析
-- 搜索历史缓存
-- 响应式设计，支持移动端
-
-## 未来规划
-
-- [ ] 增量索引功能
-- [ ] 文件内容预览
-- [ ] 高级搜索（正则表达式、文件类型过滤）
-- [ ] 知识图谱可视化
-- [ ] AI 智能分析集成
-- [ ] 数据库支持（SQLite）
-- [ ] 用户认证和权限管理
-
-## 常见问题
-
-### Q: 索引大目录时超时怎么办？
-
-A: 可以尝试索引较小的子目录，或者修改后端的超时设置。
-
-### Q: 支持哪些操作系统？
-
-A: 支持 Windows、Linux 和 macOS。
-
-### Q: 如何修改 API 端口？
-
-A: 在后端代码中修改 `PORT` 环境变量或配置文件。
-
-### Q: CSV 文件存储在哪里？
-
-A: CSV 文件存储在 `backend/temp/` 目录中。
-
-## 贡献指南
-
-欢迎提交 Issue 和 Pull Request！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 许可证
-
-本项目采用 ISC 许可证。
-
-## 联系方式
-
-如有问题或建议，请通过以下方式联系：
-
-- 提交 Issue
-- 发送邮件
-
-## 致谢
-
-感谢所有为这个项目做出贡献的开发者！
 
 ---
 
-**注意**：本工具仅用于本地文件索引和搜索，不会上传任何文件到外部服务器。所有数据都在本地处理，确保您的隐私安全。
+## ⚙️ 配置
+
+| 项目 | 默认值 | 修改方式 |
+|------|--------|---------|
+| 后端端口 | `3000` | 环境变量 `PORT` |
+| API 地址（前端） | `http://localhost:3000` | `src/App.vue` 顶部 `const API` |
+| 数据库路径 | `backend/fileindex.db` | 代码中 `DB_PATH` |
+| 上传限制 | 50 MB | `app.py` `MAX_CONTENT_LENGTH` |
+| 缓存大小 | 20 个索引 | `CACHE_MAX_KEYS` |
+| 缓存 TTL | 3600 秒 | `CACHE_TTL` |
+
+---
+
+## 🔮 后续规划
+
+- [ ] SQLite FTS5 全文检索（文件内容索引）
+- [ ] 增量扫描（只处理变更文件）
+- [ ] 多目录并发索引
+- [ ] 本地 LLM（Ollama）语义搜索接入
+- [ ] 定时自动重建索引
+- [ ] 跨机器索引同步
+
+---
+
+## 📄 许可证
+
+ISC License
+
+> **隐私声明**：所有数据均在本地处理，不会上传至任何外部服务器。
