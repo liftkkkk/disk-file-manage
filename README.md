@@ -1,58 +1,60 @@
-# FileIndex — 让你的硬盘文件触手可及
+# FileIndex — Your Disk Files at Your Fingertips
 
-> 再也不用翻文件夹找文件。  
-> FileIndex 为你的本地硬盘建立闪电级索引，支持模糊搜索、拼音搜索，全程离线，数据 100% 留在你自己的电脑上。
+**English** | [简体中文](./README.zh-CN.md)
 
-支持 **Windows / Linux / macOS**
+> Stop digging through folders to find files.
+> FileIndex builds a lightning-fast index of your local disks, with fuzzy search and pinyin search — fully offline, 100% of your data stays on your own computer.
 
----
-
-## 你是否有过这些烦恼？
-
-- 🗃️ 硬盘上有几十万个文件，找一个靠记忆和运气
-- 🔤 记不清文件名全拼，只知道大概叫什么
-- 📂 文件散落在多个目录，不知道从哪开始翻
-- 🔁 每次重启电脑都要重新等待扫描
-- 🔒 担心文件信息被上传到云端
-
-**FileIndex 就是为解决这些问题而生的。**
+Works on **Windows / Linux / macOS**
 
 ---
 
-## 核心功能一览
+## Sound familiar?
 
-### 🔍 强大的文件搜索
-- **精确搜索**：按文件名、路径、创建者快速定位
-- **模糊搜索**：打错字也没关系，`报告` 打成 `报告` 也能找到
-- **拼音搜索**：输入 `baogao` 即可匹配「报告.docx」，特别适合中文文件名
-- **按类型筛选**：点击扩展名标签，只看 PDF / Excel / 图片……
-- **排序 & 分页**：按大小、时间灵活排序，百万文件也不卡
+- 🗃️ Hundreds of thousands of files on your disk; finding one comes down to memory and luck
+- 🔤 You can't recall the exact filename, only roughly what it was called
+- 📂 Files are scattered across many directories and you don't know where to start
+- 🔁 Every reboot means waiting for a full rescan
+- 🔒 You worry about your file information being uploaded to the cloud
 
-### 📊 统计分析，一眼掌握磁盘全貌
-- 文件类型分布图，点击即可跳转搜索
-- 最大文件排行、创建者排行，快速发现空间黑洞
-
-### 💾 索引持久化，无需反复等待
-- 扫描结果保存在本地数据库，重启后立即可用
-- 支持对多个目录分别建立索引，侧边栏一键切换
-
-### 🛡️ 完全本地，隐私有保障
-- 所有数据均存储在你自己的电脑上
-- 不联网、不上传、不注册账号
-
-![图谱视图](docs/fileindex01.jpeg)
-![图谱视图](docs/fileindex02.jpeg)
+**FileIndex was built to solve exactly these problems.**
 
 ---
 
-## 快速上手（5 分钟跑起来）
+## Feature Highlights
 
-### 环境要求
+### 🔍 Powerful file search
+- **Exact search**: locate files quickly by name, path, or creator
+- **Fuzzy search**: typos are OK — a slightly wrong query still finds the file
+- **Pinyin search**: type `baogao` to match 「报告.docx」 — especially handy for Chinese filenames
+- **Filter by type**: click an extension tag to see only PDF / Excel / images…
+- **Sort & paginate**: flexible sorting by size and time, smooth even with millions of files
 
-- Python 3.8 或以上
-- Node.js 16 或以上
+### 📊 Statistics: the whole disk at a glance
+- File-type distribution chart; click it to jump straight into search
+- Largest-file and top-creator rankings to spot space hogs fast
 
-### 第一步：启动后端服务
+### 💾 Persistent index, no repeated waiting
+- Scan results are saved in a local database, ready to use right after a restart
+- Build separate indexes for multiple directories; switch between them from the sidebar in one click
+
+### 🛡️ Fully local, privacy guaranteed
+- All data is stored on your own computer
+- No internet access, no uploads, no account required
+
+![App view](docs/fileindex01.jpeg)
+![App view](docs/fileindex02.jpeg)
+
+---
+
+## Quick Start (Up and Running in 5 Minutes)
+
+### Requirements
+
+- Python 3.8 or above
+- Node.js 16 or above
+
+### Step 1: Start the backend
 
 ```bash
 cd backend
@@ -60,16 +62,16 @@ pip install -r requirements.txt
 python app.py
 ```
 
-启动成功后，你会看到：
+When it starts successfully, you will see:
 
 ```
 ✦ FileIndex backend  →  http://localhost:3000
-  fuzzy engine  : rapidfuzz        ← 模糊搜索已就绪
-  pinyin support: True             ← 拼音搜索已就绪
+  fuzzy engine  : rapidfuzz        ← fuzzy search ready
+  pinyin support: True             ← pinyin search ready
   database      : /path/to/fileindex.db
 ```
 
-### 第二步：启动前端界面
+### Step 2: Start the frontend
 
 ```bash
 cd frontend
@@ -77,9 +79,9 @@ npm install
 npm run dev
 ```
 
-打开浏览器访问 **http://localhost:5173**，即可使用。
+Open **http://localhost:5173** in your browser and start using it.
 
-### 第三步（可选）：构建生产版本
+### Step 3 (optional): build a production bundle
 
 ```bash
 cd frontend
@@ -88,63 +90,63 @@ npm run build
 
 ---
 
-## 使用流程
+## Usage
 
-### 1. 建立索引
-进入「索引目录」页 → 输入你要扫描的文件夹路径 → 点击「开始索引」。  
-扫描进度实时显示，完成后自动进入统计页。你可以为每个索引起一个好记的名字，方便以后切换。
+### 1. Build an index
+Go to the "Index Directories" page → enter the folder path you want to scan → click "Start Indexing".
+Progress is shown in real time; when the scan finishes you land on the statistics page. You can give each index a memorable name for easy switching later.
 
-### 2. 搜索文件
-进入「文件搜索」页，直接在搜索框输入关键词，支持：
-- 汉字 / 英文 / 拼音混合输入
-- 开启「模糊」开关，容忍拼写错误
-- 点击扩展名标签按类型筛选
-- 点击列头按大小 / 时间排序
+### 2. Search files
+Go to the "File Search" page and type keywords directly. Supported:
+- Mixed Chinese / English / pinyin input
+- Turn on the "Fuzzy" toggle to tolerate spelling mistakes
+- Click extension tags to filter by type
+- Click column headers to sort by size / time
 
-### 3. 查看统计
-进入「统计分析」页，查看磁盘使用全貌，快速找出最占空间的文件类型或文件。
+### 3. View statistics
+Go to the "Statistics" page to see your disk usage at a glance and quickly find the file types or files that take the most space.
 
-### 4. 个性化设置
-进入「设置」页，你可以：
-- 设置**忽略规则**（如跳过 `node_modules`、`.git` 等无用目录）
-- 调整**模糊匹配灵敏度**（推荐值 55%，越高越严格）
-- 开启 **API Key 保护**，防止他人访问你的索引服务
-
----
-
-## 后续计划
-
-我们正在开发以下功能，敬请期待：
-
-- [ ] 文件内容全文检索（不只搜文件名）
-- [ ] 增量扫描，只处理新增 / 变更的文件
-- [ ] 多目录同时并发索引
-- [ ] 接入本地 AI（Ollama）进行语义搜索
-- [ ] 定时自动重建索引
-- [ ] 多台机器之间的索引同步
+### 4. Personal settings
+On the "Settings" page you can:
+- Set **ignore rules** (e.g. skip `node_modules`, `.git`, and other useless directories)
+- Adjust **fuzzy-match sensitivity** (recommended 55%; higher means stricter)
+- Enable **API key protection** to stop others from accessing your index service
 
 ---
 
-## 常见问题
+## Roadmap
 
-**Q：扫描很慢怎么办？**  
-A：可以在设置中添加忽略规则，跳过 `node_modules`、系统目录等无意义的路径，可大幅缩短扫描时间。
+The following features are in development — stay tuned:
 
-**Q：重启电脑后还需要重新扫描吗？**  
-A：不需要。索引已持久化保存在本地数据库，重启后直接可用。
-
-**Q：支持搜索文件内容吗？**  
-A：当前版本仅支持搜索文件名和路径，文件内容全文检索在开发计划中。
-
-**Q：我的文件信息会上传到网络吗？**  
-A：绝对不会。FileIndex 完全离线运行，所有数据只存在你的本地电脑上。
+- [ ] Full-text file content search (not just filenames)
+- [ ] Incremental scanning that only processes new / changed files
+- [ ] Concurrent indexing of multiple directories
+- [ ] Local AI (Ollama) semantic search
+- [ ] Scheduled automatic index rebuilds
+- [ ] Index sync between multiple machines
 
 ---
 
-## 开源协议
+## FAQ
 
-ISC License — 自由使用，欢迎贡献。
+**Q: Scanning is slow — what can I do?**
+A: Add ignore rules in Settings to skip `node_modules`, system directories, and other pointless paths; this can dramatically shorten scan time.
+
+**Q: Do I need to rescan after restarting my computer?**
+A: No. The index is persisted in a local database and is ready to use right after restart.
+
+**Q: Can I search file contents?**
+A: The current version searches filenames and paths only; full-text content search is on the roadmap.
+
+**Q: Will my file information be uploaded to the internet?**
+A: Absolutely not. FileIndex runs fully offline; all data stays on your local computer.
 
 ---
 
-> 💡 **隐私承诺**：FileIndex 不联网、不收集任何数据，你的文件信息始终只属于你。
+## License
+
+ISC License — free to use, contributions welcome.
+
+---
+
+> 💡 **Privacy promise**: FileIndex never connects to the internet and collects no data. Your file information always belongs to you.
